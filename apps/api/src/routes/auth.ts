@@ -2,6 +2,7 @@ import { Router } from "express";
 import { getAuthUrl, getTokens, revokeToken } from "../services/authService";
 import { google } from "googleapis";
 import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, SCOPES } from "../utils/setupId";
+import type { StringLike } from "bun";
 
 const router = Router()
 
@@ -26,10 +27,10 @@ router.get("/google", (req, res) => {
 })
 
 router.get("/callback", async (req, res) => {
-   const code = req.query.code as string;
 
+   const code = req.query.code as string;
    if (!code) {
-      return res.status(400).json({ error: "Missing code" })
+      res.status(400).json({ error: "Missing Code" })
    }
 
    try {
@@ -38,6 +39,7 @@ router.get("/callback", async (req, res) => {
    } catch (err: any) {
       res.status(500).json({ error: err.message })
    }
+
 })
 
 router.post("/logout", async (req, res) => {

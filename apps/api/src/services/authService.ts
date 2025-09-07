@@ -24,3 +24,4 @@ export const revokeToken = async (token: string) => {
       headers: { "Content-type": "application/x-www-form-urlencoded" },
    });
 }
+

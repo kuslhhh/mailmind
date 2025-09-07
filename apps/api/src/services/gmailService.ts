@@ -1,16 +1,29 @@
 import { google } from "googleapis";
 import { getGoogleClient } from "../utils/googleClient";
-import { gmail } from "googleapis/build/src/apis/gmail";
 
-export const listInbox = async (accessToken: string) => {
-   const gmail = getGoogleClient(accessToken);
-   const res = await gmail.users.messages.list({
-      userId: "me",
-      maxResults: 10,
-      q: "is:unread"
-   })
-   return res.data.messages || []
-}
+export const listUnreadMessages = async (accessToken: string, maxResults = 10) => {
+  const gmail = getGoogleClient(accessToken);
+
+  const res = await gmail.users.messages.list({
+    userId: "me",
+    maxResults,
+    q: "is:unread",
+  });
+
+  return res.data.messages || [];
+};
+
+export const listReadMessages = async (accessToken: string, maxResults = 10) => {
+  const gmail = getGoogleClient(accessToken);
+
+  const res = await gmail.users.messages.list({
+    userId: "me",
+    maxResults,
+    q: "is:read",
+  });
+
+  return res.data.messages || [];
+};
 
 export const getEmailContent = async (accessToken: string, messageId: string) => {
    const oauth2Client = new google.auth.OAuth2();
