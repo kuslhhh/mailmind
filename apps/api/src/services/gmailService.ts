@@ -1,8 +1,8 @@
 import { google } from "googleapis";
 import { getGoogleClient } from "../utils/googleClient";
 
-export const listUnreadMessages = async (accessToken: string, maxResults = 10) => {
-  const gmail = getGoogleClient(accessToken);
+export const listInbox = async (token: string, maxResults = 10) => {
+  const gmail = getGoogleClient(token);
 
   const res = await gmail.users.messages.list({
     userId: "me",

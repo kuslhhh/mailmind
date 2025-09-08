@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getEmailContent, listInbox, listUnreadMessages } from "../services/gmailService";
+import { getEmailContent, listInbox } from "../services/gmailService";
 
 const router = Router()
 
@@ -33,20 +33,5 @@ router.get("/messages/:id", async (req, res) => {
    }
 })
 
-// router.get("/inbox/summarize", async (req, res) => {
-//    try {
-
-//       const authHeader = req.headers.authorization;
-//       if (!authHeader) {
-//          return res.status(401).json({error: "No token provided"})
-//       }
-
-//       const token: any = authHeader.split(" ")[1];
-//       const messages = await listUnreadMessages(token);
-
-//       const 
-
-//    }
-// })
 
 export default router;
