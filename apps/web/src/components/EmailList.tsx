@@ -17,7 +17,7 @@ export default function EmailList({ emails = [] }: Props) {
       {emails.map((email) => (
         <li
           key={email.id}
-          className="p-3 border rounded hover:bg-gray-100 transition"
+          className="p-3 border rounded hover:bg-gray-100 hover:text-black transition"
         >
           <p>ID: {email.id}</p>
           <p>Thread: {email.threadId}</p>

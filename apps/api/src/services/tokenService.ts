@@ -1,3 +1,4 @@
+import { reseller } from "googleapis/build/src/apis/reseller";
 import { prisma } from "../lib/prisma";
 import { redis } from "../lib/redis";
 import { fetch } from "bun";
@@ -52,23 +53,33 @@ export async function refreshAccessTokenWithGoogle(refreshToken: string) {
 }
 
 export async function getValidAccessTokenByEmail(email: string) {
-
    const cache = await redis.get(ACCESS_KEY(email));
    if (cache) {
-      try { return JSON.parse(cache).token; } catch { /* continue */ }
+      try {
+         return JSON.parse(cache).token;
+      } catch (error) {
+      }
    }
 
    const user = await prisma.user.findUnique({ where: { email }, include: { tokens: true } });
-   if (!user) throw new Error("User not found");
+   if (!user) {
+      throw new Error("User not found");
+   }
 
    const tokenRow = user.tokens.find(t => t.provider === "google");
-   if (!tokenRow) throw new Error("No google refresh token stored");
+   if (!tokenRow) {
+      throw new Error("No google refresh token stored");
+   }
 
-   const refreshed: any = await refreshAccessTokenWithGoogle(tokenRow.refreshToken);
-   const accessToken = refreshed.access_token as string;
-   const expiresIn = Number(refreshed.expires_in || 3600);
+   try {
+      const refreshed: any = await refreshAccessTokenWithGoogle(tokenRow.refreshToken);
+      const accessToken = refreshed.access_token as string;
+      const expiresIn = Number(refreshed.expires_in || 3600);
 
-   await redis.setex(ACCESS_KEY(email), expiresIn, JSON.stringify({ token: accessToken }));
+      await redis.setex(ACCESS_KEY(email), expiresIn, JSON.stringify({ token: accessToken }));
 
-   return accessToken;
+      return accessToken;
+   } catch (error) {
+      throw new Error(`Failed to refresh access token: ${error instanceof Error ? error.message : 'Unknown error'}`);
+   }
 }

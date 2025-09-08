@@ -4,5 +4,10 @@ export const loginWithGoogle = () => {
 
 export const fetchInbox = async (email: string) => {
    const res = await fetch(`http://localhost:4000/gmail/inbox?email=${email}`)
-   res.json()
+   
+   if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`)
+   }
+   
+   return await res.json()
 }

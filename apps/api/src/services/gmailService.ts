@@ -2,6 +2,10 @@ import { google } from "googleapis";
 import { getGoogleClient } from "../utils/googleClient";
 
 export const listInbox = async (token: string, maxResults = 10) => {
+  if (!token) {
+    throw new Error("Access token is required");
+  }
+
   const gmail = getGoogleClient(token);
 
   const res = await gmail.users.messages.list({

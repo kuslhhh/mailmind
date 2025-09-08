@@ -25,7 +25,13 @@ export default function InboxPage() {
     }
 
     fetchInbox(email)
-      .then((data: any) => setEmails(data))
+      .then((response: any) => {
+        if (response.success) {
+          setEmails(response.data || []);
+        } else {
+          setError(response.error || 'Unknown error occurred');
+        }
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [email]);
