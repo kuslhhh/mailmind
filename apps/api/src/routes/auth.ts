@@ -51,7 +51,6 @@ router.get("/callback", async (req, res) => {
       tokens.expiry_date as number,
       tokens.scope as string
    );
-
    res.redirect(`http://localhost:3000?email=${encodeURIComponent(email)}`)
 
 })

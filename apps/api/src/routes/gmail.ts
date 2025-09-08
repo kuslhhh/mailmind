@@ -10,6 +10,9 @@ router.get("/inbox", async (req, res) => {
     const authHeader = req.headers.authorization?.replace("Bearer ", "");
     const accessToken = authHeader ?? (email ? await getValidAccessTokenByEmail(email) : null);
 
+    console.log(email);
+    console.log(accessToken);
+
     if (!accessToken) return res.status(401).json({ error: "No token or email provided" });
 
     const messages = await listInbox(accessToken);
