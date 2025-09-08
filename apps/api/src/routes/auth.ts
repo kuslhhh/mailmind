@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { getAuthUrl, getTokens, revokeToken } from "../services/authService";
 import { google } from "googleapis";
-import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, SCOPES } from "../utils/setupId";
-import type { StringLike } from "bun";
+import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } from "../utils/setupId";
+import { saveTokensForUser } from "src/services/tokenService";
 
 const router = Router()
 
@@ -20,7 +20,11 @@ router.get("/google", (req, res) => {
    const url = oauth2Client.generateAuthUrl({
       access_type: "offline",
       prompt: "consent",
-      scope: SCOPES
+      scope: [
+         "openid",
+         "https://www.googleapis.com/auth/userinfo.email",
+         "https://www.googleapis.com/auth/gmail.readonly"
+      ]
    })
 
    res.redirect(url)
@@ -33,12 +37,22 @@ router.get("/callback", async (req, res) => {
       res.status(400).json({ error: "Missing Code" })
    }
 
-   try {
-      const tokens = await getTokens(code)
-      res.json(tokens)
-   } catch (err: any) {
-      res.status(500).json({ error: err.message })
-   }
+   const { tokens } = await oauth2Client.getToken(code)
+   oauth2Client.setCredentials(tokens)
+
+   const oauth2 = google.oauth2({ auth: oauth2Client, version: "v2" })
+   const me = await oauth2.userinfo.get()
+   const email = me.data.email!;
+
+   await saveTokensForUser(
+      email,
+      tokens.refresh_token!,
+      tokens.access_token!,
+      tokens.expiry_date as number,
+      tokens.scope as string
+   );
+
+   res.redirect(`http://localhost:3000?email=${encodeURIComponent(email)}`)
 
 })
 

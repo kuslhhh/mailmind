@@ -4,9 +4,14 @@
     "lib": ["ESNext"],
     "target": "ESNext",
     "module": "Preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@generated/*": ["src/generated/*"]
+    },
     "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
+    
 
     // Bundler mode
     "moduleResolution": "bundler",
@@ -25,5 +30,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
-  }
+  },
+  "include": ["src/**/*.ts", "src/generated/**/*.ts"]
 }
